@@ -4,22 +4,16 @@ import React from "react";
 import * as Yup from "yup";
 
 const CustomerInfoForm = (params) => {
-  const initialValues = {
-    FullName: "",
-    Email: "",
-    PhoneNumber: "",
-    paymentMethod: "",
-    paymentVia: "",
-    VoucherCode: "",
-    TicketBookedList: [],
-  };
+  const { customerInfoRef } = params;
+
+  const initialValues = customerInfoRef.current;
 
   const validationSchema = Yup.object().shape({
-    FullName: Yup.string().required("Vui lòng nhập họ và tên"),
-    Email: Yup.string()
-      .email("Email không hợp lệ")
+    fullName: Yup.string().required("Vui lòng nhập họ và tên"),
+    email: Yup.string()
+      .email("email không hợp lệ")
       .required("Vui lòng nhập email"),
-    PhoneNumber: Yup.string()
+    phoneNumber: Yup.string()
       .matches(/^\d{10,}$/, "Số điện thoại không hợp lệ")
       .required("Vui lòng nhập số điện thoại"),
     paymentMethod: Yup.string()
@@ -32,7 +26,6 @@ const CustomerInfoForm = (params) => {
       ),
       otherwise: Yup.string().nullable(),
     }),
-    VoucherCode: Yup.string().nullable(),
   });
 
   return (
@@ -45,43 +38,43 @@ const CustomerInfoForm = (params) => {
           setSubmitting(false);
         }}
       >
-        {({ values }) => (
+        {({ values, errors, touched, isValid }) => (
           <Form>
             <div className="mb-3">
               <Field
-                name="FullName"
+                name="fullName"
                 type="text"
                 className="form-control"
                 placeholder="Họ và tên"
               />
               <ErrorMessage
-                name="FullName"
+                name="fullName"
                 component="div"
                 className="text-danger"
               />
             </div>
             <div className="mb-3">
               <Field
-                name="Email"
+                name="email"
                 type="email"
                 className="form-control"
-                placeholder="Email"
+                placeholder="email"
               />
               <ErrorMessage
-                name="Email"
+                name="email"
                 component="div"
                 className="text-danger"
               />
             </div>
             <div className="mb-3">
               <Field
-                name="PhoneNumber"
+                name="phoneNumber"
                 type="text"
                 className="form-control"
                 placeholder="Số điện thoại"
               />
               <ErrorMessage
-                name="PhoneNumber"
+                name="phoneNumber"
                 component="div"
                 className="text-danger"
               />
@@ -117,19 +110,6 @@ const CustomerInfoForm = (params) => {
                 />
               </div>
             )}
-            <div className="mb-3">
-              <Field
-                name="VoucherCode"
-                type="text"
-                className="form-control"
-                placeholder="Mã voucher (nếu có)"
-              />
-              <ErrorMessage
-                name="VoucherCode"
-                component="div"
-                className="text-danger"
-              />
-            </div>
           </Form>
         )}
       </Formik>

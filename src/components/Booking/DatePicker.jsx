@@ -1,15 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { mockTicketTour } from "../../mockData";
 
 const DatePicker = (props) => {
-  const { TicketTour } = props; // call api
+  const { ticketBookedInfoRef = {} } = props;
 
+  // Variables
   const numOfDateToDisplay = 4;
+
+  // States
   const [selectedDate, setSelectedDate] = useState(0);
   const [startDate, setStartDate] = useState(0);
 
+  // API
+  const ticketTour = mockTicketTour; // call api
+  useEffect(() => {
+    // call API
+
+    ticketBookedInfoRef.current.idRouteDepartureDate =
+      ticketTour[0].idRouteDepartureDate;
+  }, []);
+
   const handleNextDateGroup = () => {
     setStartDate((pre) => {
-      if (pre + numOfDateToDisplay >= TicketTour?.length) {
+      if (pre + numOfDateToDisplay >= ticketTour?.length) {
         return pre;
       }
 
@@ -26,7 +39,8 @@ const DatePicker = (props) => {
     });
   };
   const handleDateClick = (dateIndex) => {
-    console.log(TicketTour[dateIndex]["idRouteDepartureDate"]);
+    ticketBookedInfoRef.current.idRouteDepartureDate =
+      ticketTour[dateIndex]?.idRouteDepartureDate;
 
     setSelectedDate(dateIndex);
   };
@@ -40,8 +54,9 @@ const DatePicker = (props) => {
         &lt;
       </button>
       <div className="d-flex  overflow-auto">
-        {TicketTour.slice(startDate, startDate + numOfDateToDisplay).map(
-          (d, i) => {
+        {ticketTour
+          .slice(startDate, startDate + numOfDateToDisplay)
+          .map((d, i) => {
             const realIndex = i + startDate;
             const mm = d.departureDate.slice(0, 2);
             const dd = d.departureDate.slice(3, 5);
@@ -69,8 +84,7 @@ const DatePicker = (props) => {
                 </p>
               </div>
             );
-          }
-        )}
+          })}
       </div>
       <button
         onClick={handleNextDateGroup}

@@ -318,6 +318,7 @@ export const mockTourDetail = {
   isAvailable: true,
   ticketPriceList: [
     {
+      idTicketPrice: 1,
       parentPrice: 299000,
       childPrice: 225000,
       ticketType: "24h",
@@ -325,6 +326,7 @@ export const mockTourDetail = {
       status: true,
     },
     {
+      idTicketPrice: 2,
       parentPrice: 500000,
       childPrice: 300000,
       ticketType: "48h",

@@ -114,7 +114,7 @@ const Footer = () => {
                   <span>
                     <i class="ri-mail-line"></i>
                   </span>
-                  Email:
+                  email:
                 </h6>
 
                 <p className="mb-0">ptithcm@gmail.com</p>
