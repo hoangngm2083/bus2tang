@@ -24,16 +24,16 @@ const TourDetails = () => {
   const avgRating = 10;
   const {
     photo,
-    BusRouteName,
-    Overview,
-    Highlights,
-    Included,
-    Excluded,
-    WhatToBring,
-    BeforeYouGo,
-    Description,
-    MediaBusRouteList,
-    BusStopList,
+    busRouteName,
+    overview,
+    highlights,
+    included,
+    excluded,
+    whatToBring,
+    beforeYouGo,
+    description,
+    mediaBusRouteList,
+    busStopList,
     desc,
     price,
 
@@ -43,16 +43,16 @@ const TourDetails = () => {
     maxGroupSize,
   } = tour; // tour
   const reviews = mockReviews;
-  const tourImgs = MediaBusRouteList.map((ele) => ele["Url"]);
+  const tourImgs = mediaBusRouteList.map((ele) => ele["url"]);
 
   const tourInfos = [
-    { title: "Tổng quan", content: Overview },
-    { title: "Điểm nổi bật", content: Highlights },
-    { title: "Bao gồm", content: Included },
-    { title: "Không bao gồm", content: Excluded },
-    { title: "Mang theo những gì", content: WhatToBring },
-    { title: "Trước khi đi", content: BeforeYouGo },
-    { title: "Mô tả", content: Description },
+    { title: "Tổng quan", content: overview },
+    { title: "Điểm nổi bật", content: highlights },
+    { title: "Bao gồm", content: included },
+    { title: "Không bao gồm", content: excluded },
+    { title: "Mang theo những gì", content: whatToBring },
+    { title: "Trước khi đi", content: beforeYouGo },
+    { title: "Mô tả", content: description },
   ];
 
   const options = { day: "numeric", month: "long", year: "numeric" };
@@ -108,18 +108,18 @@ const TourDetails = () => {
               </div>
 
               <div className="tour__content mt-4">
-                {BusStopList.length > 0 && (
+                {busStopList.length > 0 && (
                   <div className="tour__info mt-4">
                     <div className="container">
                       {/* <div className="row"><div/> */}
                       <div className="row row-cols-4">
-                        {BusStopList?.map((stopNode) => (
+                        {busStopList?.map((stopNode) => (
                           <div className="col">
                             <div className="row ">
-                              <img src={stopNode.MediaBusStopList[0].Url} />
+                              <img src={stopNode.mediaBusStopList[0].url} />
                             </div>
                             <div className="row">
-                              <h5>{stopNode.BusStopName}</h5>
+                              <h5>{stopNode.busStopName}</h5>
                             </div>
                           </div>
                         ))}
@@ -129,7 +129,7 @@ const TourDetails = () => {
                 )}
 
                 <div className="tour__info mt-4">
-                  {/* <h2>{BusRouteName}</h2>
+                  {/* <h2>{busRouteName}</h2>
                   <table class="table">
                     <thead>
                       <tr>
@@ -140,13 +140,13 @@ const TourDetails = () => {
                     </thead>
                     <tbody>
                       {mockTicketTour
-                        .filter((ele) => ele?.Status)
+                        .filter((ele) => ele?.status)
                         .map((slotOfTour, index) => {
                           return (
                             <tr>
                               <th scope="row">{index + 1}</th>
-                              <td>{slotOfTour?.DepartureDate}</td>
-                              <td>{slotOfTour?.NumberOfSeats}</td>
+                              <td>{slotOfTour?.departureDate}</td>
+                              <td>{slotOfTour?.numberOfSeats}</td>
                             </tr>
                           );
                         })}

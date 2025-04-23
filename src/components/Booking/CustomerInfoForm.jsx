@@ -8,8 +8,8 @@ const CustomerInfoForm = (params) => {
     FullName: "",
     Email: "",
     PhoneNumber: "",
-    PaymentMethod: "",
-    PaymentVia: "",
+    paymentMethod: "",
+    paymentVia: "",
     VoucherCode: "",
     TicketBookedList: [],
   };
@@ -22,10 +22,10 @@ const CustomerInfoForm = (params) => {
     PhoneNumber: Yup.string()
       .matches(/^\d{10,}$/, "Số điện thoại không hợp lệ")
       .required("Vui lòng nhập số điện thoại"),
-    PaymentMethod: Yup.string()
+    paymentMethod: Yup.string()
       .oneOf(["0", "1"], "Phương thức thanh toán không hợp lệ")
       .required("Vui lòng chọn phương thức thanh toán"),
-    PaymentVia: Yup.string().when("PaymentMethod", {
+    paymentVia: Yup.string().when("paymentMethod", {
       is: "1",
       then: Yup.string().required(
         "Vui lòng chọn phương thức thanh toán trực tuyến"
@@ -87,7 +87,7 @@ const CustomerInfoForm = (params) => {
               />
             </div>
             <div className="mb-3">
-              <Field as="select" name="PaymentMethod" className="form-select">
+              <Field as="select" name="paymentMethod" className="form-select">
                 <option value="" disabled>
                   Phương thức thanh toán
                 </option>
@@ -95,14 +95,14 @@ const CustomerInfoForm = (params) => {
                 <option value="1">Thanh toán trực tuyến</option>
               </Field>
               <ErrorMessage
-                name="PaymentMethod"
+                name="paymentMethod"
                 component="div"
                 className="text-danger"
               />
             </div>
-            {values.PaymentMethod === "1" && (
+            {values.paymentMethod === "1" && (
               <div className="mb-3">
-                <Field as="select" name="PaymentVia" className="form-select">
+                <Field as="select" name="paymentVia" className="form-select">
                   <option value="" disabled>
                     Thanh toán qua
                   </option>
@@ -111,7 +111,7 @@ const CustomerInfoForm = (params) => {
                   <option value="momo">MoMo</option>
                 </Field>
                 <ErrorMessage
-                  name="PaymentVia"
+                  name="paymentVia"
                   component="div"
                   className="text-danger"
                 />

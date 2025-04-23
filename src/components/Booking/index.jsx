@@ -6,7 +6,7 @@ import TicketForm from "./TicketForm";
 
 const Booking = ({
   TicketTour = mockTicketTour,
-  BusRouteName = mockTourDetail["BusRouteName"],
+  busRouteName = mockTourDetail["busRouteName"],
 }) => {
   // Variables
 
@@ -14,35 +14,35 @@ const Booking = ({
     FullName: "",
     Email: "",
     PhoneNumber: "",
-    UpdateAt: "",
+    updateAt: "",
     Region: "",
     TicketBookedList: [
       {
-        IdRouteDepartureDate: null,
+        idRouteDepartureDate: null,
         Price: 0,
         ChildCount: 0,
         ParentCount: 0,
-        TicketType: "",
+        ticketType: "",
       },
       // {
-      //   IdRouteDepartureDate: 0,
+      //   idRouteDepartureDate: 0,
       //   Price: 0,
       //   ChildCount: 0,
       //   ParentCount: 0,
-      //   TicketType: "",
+      //   ticketType: "",
       // },
     ],
     PaidDateTime: "",
-    PaymentMethod: 0,
-    PaymentVia: "",
+    paymentMethod: 0,
+    paymentVia: "",
     VoucherCode: "",
   });
   const ticket = {
-    IdRouteDepartureDate: 3,
+    idRouteDepartureDate: 3,
     Price: 4500000,
     ChildCount: 1,
     ParentCount: 2,
-    TicketType: "48h",
+    ticketType: "48h",
   };
 
   // State
@@ -57,7 +57,7 @@ const Booking = ({
         {/* Sub-Row 1*/}
         <div className=" card text-dark p-3 rounded mb-3 d-flex justify-content-between align-items-center">
           <div>
-            <p className="fw-bold mb-0">{BusRouteName}</p>
+            <p className="fw-bold mb-0">{busRouteName}</p>
           </div>
         </div>
 
@@ -72,8 +72,8 @@ const Booking = ({
               FullName: "",
               Email: "",
               PhoneNumber: "",
-              PaymentMethod: "",
-              PaymentVia: "",
+              paymentMethod: "",
+              paymentVia: "",
               VoucherCode: "",
             }}
           />

@@ -26,7 +26,7 @@ const DatePicker = (props) => {
     });
   };
   const handleDateClick = (dateIndex) => {
-    console.log(TicketTour[dateIndex]["IdRouteDepartureDate"]);
+    console.log(TicketTour[dateIndex]["idRouteDepartureDate"]);
 
     setSelectedDate(dateIndex);
   };
@@ -43,13 +43,13 @@ const DatePicker = (props) => {
         {TicketTour.slice(startDate, startDate + numOfDateToDisplay).map(
           (d, i) => {
             const realIndex = i + startDate;
-            const mm = d.DepartureDate.slice(0, 2);
-            const dd = d.DepartureDate.slice(3, 5);
+            const mm = d.departureDate.slice(0, 2);
+            const dd = d.departureDate.slice(3, 5);
             return (
               <div
                 key={i}
                 onClick={() => {
-                  if (d.Status) {
+                  if (d.status) {
                     handleDateClick(realIndex);
                     return;
                   }
@@ -57,7 +57,7 @@ const DatePicker = (props) => {
                   alert("Khong the chon!");
                 }}
                 className={`${
-                  d.Status || "opacity-50"
+                  d.status || "opacity-50"
                 }  p-2 fw-bold rounded text-center  cursor-pointer mx-1 ${
                   selectedDate === realIndex
                     ? "bg-warning text-danger"

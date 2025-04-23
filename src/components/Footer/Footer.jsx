@@ -104,7 +104,7 @@ const Footer = () => {
                   <span>
                     <i class="ri-map-pin-line"></i>
                   </span>
-                  Address:
+                  address:
                 </h6>
                 <p className="mb-0">95 Man Thien, Hiep Phu, Thu Duc</p>
               </ListGroupItem>

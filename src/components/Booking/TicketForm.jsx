@@ -8,9 +8,9 @@ const TicketForm = (params) => {
   console.log("render ticket form");
 
   const {
-    NumberOfSeats = 30,
-    TicketPriceList,
-    TicketPrices = mockTourDetail["TicketPriceList"],
+    numberOfSeats = 30,
+    ticketPriceList,
+    TicketPrices = mockTourDetail["ticketPriceList"],
   } = params;
 
   const [ticketTypeSelected, setTicketTypeSelected] = useState(null);
@@ -39,8 +39,8 @@ const TicketForm = (params) => {
       const total = values.adults + values.children;
       if (total < 1) {
         errors.total = "Tổng số người phải ít nhất là 1";
-      } else if (total > NumberOfSeats) {
-        errors.total = `Chúng tôi chỉ hỗ trợ đặt vé online tối đa ${NumberOfSeats} vé. Nếu muốn đặt nhiều hơn, hãy liên hệ tư vấn viên!`;
+      } else if (total > numberOfSeats) {
+        errors.total = `Chúng tôi chỉ hỗ trợ đặt vé online tối đa ${numberOfSeats} vé. Nếu muốn đặt nhiều hơn, hãy liên hệ tư vấn viên!`;
       }
       return errors;
     },
@@ -55,21 +55,21 @@ const TicketForm = (params) => {
         <div key={i} className="col-md-6 mb-3 ">
           <div
             onClick={() => {
-              handleTicketTypeSelected(price.TicketType);
+              handleTicketTypeSelected(price.ticketType);
             }}
             className={`card text-dark ${
-              ticketTypeSelected == price?.TicketType && "bg-warning"
+              ticketTypeSelected == price?.ticketType && "bg-warning"
             }`}
           >
             <div className="card-body d-flex justify-content-between align-items-center">
               <div>
                 <p className="mb-0">
-                  Loại vé: <span className="fw-bold ">{price.TicketType}</span>
+                  Loại vé: <span className="fw-bold ">{price.ticketType}</span>
                 </p>
                 <p className="mb-0">
-                  {formatMoney(price.ParentPrice)}/Người lớn
+                  {formatMoney(price.parentPrice)}/Người lớn
                 </p>
-                <p className="mb-0">{formatMoney(price.ChildPrice)}/Trẻ em</p>
+                <p className="mb-0">{formatMoney(price.childPrice)}/Trẻ em</p>
               </div>
             </div>
           </div>
