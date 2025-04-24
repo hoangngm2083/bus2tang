@@ -1,22 +1,23 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
+import { useDispatch } from "react-redux";
+import apiPayment from "../../api/apiPayment";
 import { mockTourDetail } from "../../mockData";
+import { setBookingData } from "../../store/bookingSlice";
 import CustomerInfoForm from "./CustomerInfoForm";
 import TicketForm from "./TicketForm";
 
-const Booking = ({ busRouteName = mockTourDetail["busRouteName"] }) => {
+const Booking = ({
+  busRouteName = mockTourDetail["busRouteName"],
+  ticketPriceList = mockTourDetail["ticketPriceList"],
+}) => {
+  const dispatch = useDispatch();
   // States
-
-  // API
-  useEffect(() => {
-    // Call API get Tour Detail
-  }, []);
 
   // Ref
   const customerInfoRef = useRef({
     fullName: "",
     email: "",
     phoneNumber: "",
-    updateAt: "",
     region: "VietNam",
     paidDateTime: "",
     paymentMethod: 0,
@@ -40,7 +41,14 @@ const Booking = ({ busRouteName = mockTourDetail["busRouteName"] }) => {
 
       ticketBooked: ticketBookedInfoRef.current,
     };
-    console.log(data);
+    console.log("handleClickBooking", data);
+    // Dispatch dữ liệu vào Redux store
+    dispatch(setBookingData(data));
+
+    const apiPaymentURL = apiPayment(data.ticketBooked.price);
+    window.location.href = apiPaymentURL;
+    // (Tùy chọn) Log để kiểm tra
+    console.log("Booking data saved:", data);
   };
 
   return (
@@ -55,7 +63,10 @@ const Booking = ({ busRouteName = mockTourDetail["busRouteName"] }) => {
 
         {/* Sub-Row 2: price */}
         <div className="row">
-          <TicketForm ticketBookedInfoRef={ticketBookedInfoRef} />
+          <TicketForm
+            ticketPriceList={ticketPriceList}
+            ticketBookedInfoRef={ticketBookedInfoRef}
+          />
         </div>
 
         <div className="row card pt-3">

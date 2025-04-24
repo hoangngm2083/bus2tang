@@ -31,4 +31,4 @@ const FeaturedTourList = () => {
   );
 };
 
-export default FeaturedTourList;
+export default React.memo(FeaturedTourList);

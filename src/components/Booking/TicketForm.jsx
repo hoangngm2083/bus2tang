@@ -1,65 +1,45 @@
 import { useFormik } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import * as Yup from "yup";
 import { mockTourDetail } from "../../mockData";
 import formatMoney from "../../utils/formatMoney";
 import DatePicker from "./DatePicker";
 
-const TicketForm = (params) => {
-  // Get parameters
-  const {
-    ticketBookedInfoRef,
-    numberOfSeats = 30,
-    ticketPriceList = mockTourDetail["ticketPriceList"], // truyen tu component cha
-  } = params;
-
-  // States
-  const [ticketTypeSelected, setTicketTypeSelected] = useState(null);
+const TicketForm = ({
+  ticketBookedInfoRef,
+  numberOfSeats = 30,
+  ticketPriceList = mockTourDetail.ticketPriceList,
+}) => {
+  const [ticketTypeIdSelected, setTicketTypeIdSelected] = useState(null);
   const [voucherMessage, setVoucherMessage] = useState(null);
   const [totalMoney, setTotalMoney] = useState(0);
 
-  // Handle Events
-  const handleTicketTypeSelected = (typeId) => {
-    ticketBookedInfoRef.current.idTicketPrice = typeId;
-    setTicketTypeSelected(typeId);
-  };
+  // Validation schema
+  const validationSchema = useMemo(
+    () =>
+      Yup.object({
+        parentCount: Yup.number()
+          .min(0, "Số lượng người lớn không thể nhỏ hơn 0")
+          .required("Vui lòng nhập số lượng người lớn"),
+        childCount: Yup.number()
+          .min(0, "Số lượng trẻ em không thể nhỏ hơn 0")
+          .required("Vui lòng nhập số lượng trẻ em"),
+        voucherCode: Yup.string(),
+      }),
+    []
+  );
 
-  const handleSearchVoucherClicked = (e) => {
-    if (!ticketBookedInfoRef.current.voucherCode) {
-      setVoucherMessage("Bạn đang để trống!");
-      return;
-    }
-
-    // API
-    // (async () => {
-    //   const res = await fetch("...");
-    //   setVoucherMessage(res);
-    // })();
-    // tinh lai tong so tien
-    reCalcTotalMoney(ticketBookedInfoRef.current);
-    setVoucherMessage("Giamr 25%");
-  };
-
-  // formik
+  // Formik setup
   const formik = useFormik({
     initialValues: {
       parentCount: 1,
       childCount: 0,
       voucherCode: "",
     },
-    validateOnChange: true,
-    validationSchema: Yup.object({
-      parentCount: Yup.number()
-        .min(0, "Số lượng người lớn không thể nhỏ hơn 0")
-        .required("Vui lòng nhập số lượng người lớn"),
-      childCount: Yup.number()
-        .min(0, "Số lượng trẻ em không thể nhỏ hơn 0")
-        .required("Vui lòng nhập số lượng trẻ em"),
-      voucherCode: Yup.string(),
-    }),
-    validate: (values) => {
+    validationSchema,
+    validate: ({ parentCount, childCount }) => {
       const errors = {};
-      const total = values.parentCount + values.childCount;
+      const total = parentCount + childCount;
       if (total < 1) {
         errors.total = "Tổng số người phải ít nhất là 1";
       } else if (total > numberOfSeats) {
@@ -68,189 +48,258 @@ const TicketForm = (params) => {
       return errors;
     },
     onSubmit: (values) => {
-      console.log("Form values:", values);
+      console.log("Form submitted:", values);
     },
   });
 
-  const reCalcTotalMoney = (ticket) => {
-    const price =
-      ((Number(ticket.childCount || 0) *
-        Number(ticketPriceList[ticketTypeSelected]?.childPrice || 0) +
-        Number(ticket.parentCount || 0) *
-          Number(ticketPriceList[ticketTypeSelected]?.parentPrice || 0)) *
-        (100 - Number(ticket.voucherPercent || 0))) /
-      100;
+  // Memoized reCalcTotalMoney function
+  const reCalcTotalMoney = useCallback(
+    (ticket, typeId) => {
+      if (!ticket || !typeId || !ticketPriceList) {
+        setTotalMoney(0);
+        return;
+      }
 
-    ticketBookedInfoRef.current = { ...ticketBookedInfoRef.current, price };
-    setTotalMoney(price);
-  };
+      const ticketPrice = ticketPriceList.find(
+        (ele) => ele.idTicketPrice === typeId
+      );
+      if (!ticketPrice) {
+        setTotalMoney(0);
+        return;
+      }
 
-  // Thêm useEffect để theo dõi giá trị và lỗi
+      const childCount = Number(ticket.childCount || 0);
+      const parentCount = Number(ticket.parentCount || 0);
+      const voucherPercent = Number(ticket.voucherPercent || 0);
+
+      if (
+        childCount < 0 ||
+        parentCount < 0 ||
+        voucherPercent < 0 ||
+        voucherPercent > 100
+      ) {
+        setTotalMoney(0);
+        return;
+      }
+
+      const price =
+        ((childCount * Number(ticketPrice.childPrice || 0) +
+          parentCount * Number(ticketPrice.parentPrice || 0)) *
+          (100 - voucherPercent)) /
+        100;
+
+      ticketBookedInfoRef.current = { ...ticketBookedInfoRef.current, price };
+      setTotalMoney(price);
+    },
+    [ticketPriceList, ticketBookedInfoRef]
+  );
+
+  // Handle ticket type selection
+  const handleTicketTypeSelected = useCallback(
+    (typeId) => {
+      ticketBookedInfoRef.current.idTicketPrice = typeId;
+      setTicketTypeIdSelected(typeId);
+      reCalcTotalMoney(ticketBookedInfoRef.current, typeId);
+    },
+    [reCalcTotalMoney, ticketBookedInfoRef]
+  );
+
+  // Handle voucher search
+  const handleSearchVoucherClicked = useCallback(
+    (e) => {
+      e.preventDefault();
+      const voucherCode = formik.values.voucherCode;
+      if (!voucherCode) {
+        setVoucherMessage("Bạn đang để trống!");
+        return;
+      }
+
+      // Mock API response
+      const mockVoucherPercent = 25;
+      ticketBookedInfoRef.current.voucherPercent = mockVoucherPercent;
+      setVoucherMessage(`Giảm ${mockVoucherPercent}%`);
+      reCalcTotalMoney(ticketBookedInfoRef.current, ticketTypeIdSelected);
+    },
+    [
+      formik.values.voucherCode,
+      ticketBookedInfoRef,
+      ticketTypeIdSelected,
+      reCalcTotalMoney,
+    ]
+  );
+
+  // Sync formik values with ref
   useEffect(() => {
     if (formik.isValid) {
       ticketBookedInfoRef.current = {
         ...ticketBookedInfoRef.current,
         ...formik.values,
       };
-
-      // tinh lai tong so tien
-      reCalcTotalMoney(ticketBookedInfoRef.current);
+      if (ticketTypeIdSelected) {
+        reCalcTotalMoney(ticketBookedInfoRef.current, ticketTypeIdSelected);
+      }
     }
-  }, [formik.values, formik.errors, formik.isValid]);
+  }, [
+    formik.values,
+    formik.isValid,
+    ticketTypeIdSelected,
+    reCalcTotalMoney,
+    ticketBookedInfoRef,
+  ]);
+
+  // Auto-select first ticket type on mount
+  useEffect(() => {
+    if (ticketPriceList.length > 0 && !ticketTypeIdSelected) {
+      const firstTicketType = ticketPriceList[0].idTicketPrice;
+      handleTicketTypeSelected(firstTicketType);
+    }
+  }, [ticketPriceList, ticketTypeIdSelected, handleTicketTypeSelected]);
 
   return (
-    <>
+    <div className="container">
       <div className="card mb-3">
         <DatePicker ticketBookedInfoRef={ticketBookedInfoRef} />
       </div>
-      {ticketPriceList.map((price, i) => (
-        <div key={i} className="col-md-6 mb-3 ">
-          <div
-            onClick={() => {
-              handleTicketTypeSelected(price.idTicketPrice);
-            }}
-            className={`card text-dark ${
-              ticketTypeSelected == price?.idTicketPrice && "bg-warning"
-            }`}
-          >
-            <div className="card-body d-flex justify-content-between align-items-center">
-              <div>
-                <p className="mb-0">
-                  Loại vé: <span className="fw-bold ">{price.ticketType}</span>
-                </p>
-                <p className="mb-0">
-                  {formatMoney(price.parentPrice)}/Người lớn
-                </p>
-                <p className="mb-0">{formatMoney(price.childPrice)}/Trẻ em</p>
+      <div className="row">
+        {ticketPriceList.map((ticketPrice) => (
+          <div key={ticketPrice.idTicketPrice} className="col-md-6 mb-3">
+            <div
+              onClick={() =>
+                handleTicketTypeSelected(ticketPrice.idTicketPrice)
+              }
+              className={`card text-dark ${
+                ticketTypeIdSelected === ticketPrice.idTicketPrice
+                  ? "bg-warning"
+                  : ""
+              }`}
+              role="button"
+            >
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <p className="mb-0 fw-bold">
+                    Loại vé: {ticketPrice.ticketType}
+                  </p>
+                  <p className="mb-0">
+                    {formatMoney(ticketPrice.parentPrice)}/Người lớn
+                  </p>
+                  <p className="mb-0">
+                    {formatMoney(ticketPrice.childPrice)}/Trẻ em
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
-      {ticketTypeSelected && (
-        <div className=" card pt-3 mb-3">
+        ))}
+      </div>
+      {ticketTypeIdSelected && (
+        <div className="card p-3 mb-3">
           <form onSubmit={formik.handleSubmit}>
-            {/* Nguoi lon */}
-            <div className="form-group  mb-3">
-              <div className="container">
-                <div class="row">
-                  <div className="col-8">
-                    <input
-                      type="number"
-                      min={0}
-                      className={`form-control ${
-                        formik.touched.parentCount && formik.errors.parentCount
-                          ? "is-invalid"
-                          : ""
-                      }`}
-                      id="parentCount"
-                      name="parentCount"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.parentCount}
-                    />
-                    {formik.touched.parentCount && formik.errors.parentCount ? (
-                      <div className="invalid-feedback">
-                        {formik.errors.parentCount}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div class="col-4 d-flex align-items-center">
-                    <p className="m-0"> Người lớn</p>
-                  </div>
+            <div className="form-group mb-3">
+              <div className="row align-items-center">
+                <div className="col-8">
+                  <input
+                    type="number"
+                    min="0"
+                    className={`form-control ${
+                      formik.touched.parentCount && formik.errors.parentCount
+                        ? "is-invalid"
+                        : ""
+                    }`}
+                    id="parentCount"
+                    name="parentCount"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.parentCount}
+                  />
+                  {formik.touched.parentCount && formik.errors.parentCount && (
+                    <div className="invalid-feedback">
+                      {formik.errors.parentCount}
+                    </div>
+                  )}
                 </div>
+                <div className="col-4">Người lớn</div>
               </div>
             </div>
-            {/* Tre em */}
             <div className="form-group mb-3">
-              <div className="container">
-                <div class="row">
-                  <div className="col-8">
-                    <input
-                      type="number"
-                      min={0}
-                      className={`form-control ${
-                        formik.touched.childCount && formik.errors.childCount
-                          ? "is-invalid"
-                          : ""
-                      }`}
-                      id="childCount"
-                      name="childCount"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.childCount}
-                    />
-                    {formik.touched.childCount && formik.errors.childCount ? (
-                      <div className="invalid-feedback">
-                        {formik.errors.childCount}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div class="col-4 d-flex align-items-center">
-                    <p className="m-0"> Trẻ em</p>
-                  </div>
+              <div className="row align-items-center">
+                <div className="col-8">
+                  <input
+                    type="number"
+                    min="0"
+                    className={`form-control ${
+                      formik.touched.childCount && formik.errors.childCount
+                        ? "is-invalid"
+                        : ""
+                    }`}
+                    id="childCount"
+                    name="childCount"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.childCount}
+                  />
+                  {formik.touched.childCount && formik.errors.childCount && (
+                    <div className="invalid-feedback">
+                      {formik.errors.childCount}
+                    </div>
+                  )}
                 </div>
+                <div className="col-4">Trẻ em</div>
               </div>
             </div>
-            {/* Voucher */}
             <div className="form-group mb-3">
-              <div className="container">
-                <div class="row">
-                  <div className="col-8">
-                    <input
-                      type="text"
-                      className={`form-control ${
-                        formik.touched.voucherCode && formik.errors.voucherCode
-                          ? "is-invalid"
-                          : ""
-                      }`}
-                      id="voucherCode"
-                      name="voucherCode"
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.voucherCode}
-                      placeholder="Mã voucher (nếu có)"
-                    />
-                    {formik.touched.voucherCode && formik.errors.voucherCode ? (
-                      <div className="invalid-feedback">
-                        {formik.errors.voucherCode}
-                      </div>
-                    ) : null}
-                  </div>
+              <div className="row align-items-center">
+                <div className="col-8">
+                  <input
+                    type="text"
+                    className={`form-control ${
+                      formik.touched.voucherCode && formik.errors.voucherCode
+                        ? "is-invalid"
+                        : ""
+                    }`}
+                    id="voucherCode"
+                    name="voucherCode"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.voucherCode}
+                    placeholder="Mã voucher (nếu có)"
+                  />
+                  {formik.touched.voucherCode && formik.errors.voucherCode && (
+                    <div className="invalid-feedback">
+                      {formik.errors.voucherCode}
+                    </div>
+                  )}
+                </div>
+                <div className="col-4">
                   <button
+                    type="button"
                     onClick={handleSearchVoucherClicked}
-                    class="col-4 d-flex align-items-center btn bg-warning justify-content-center"
+                    className="btn btn-warning w-100"
                   >
-                    <p className="m-0 fw-bold"> Tra cứu</p>
+                    Tra cứu
                   </button>
                 </div>
-
-                {voucherMessage && (
-                  <div className="row mt-2">
-                    <p className="m-0">{voucherMessage}</p>
-                  </div>
-                )}
               </div>
+              {voucherMessage && (
+                <div className="mt-2 text-success">{voucherMessage}</div>
+              )}
             </div>
             {formik.errors.total && (
               <div className="alert alert-danger">{formik.errors.total}</div>
             )}
-
-            {!formik.errors.total && <div className="">{}</div>}
           </form>
         </div>
       )}
-      <div className=" card p-3 mb-3">
+      <div className="card p-3 mb-3">
         <div className="row">
           <div className="col-4">
-            <p className="m-0 px-3 fw-bold">Chi phí:</p>
+            <p className="m-0 fw-bold">Chi phí:</p>
           </div>
           <div className="col-8">
             <p className="m-0 fw-bold text-danger">{formatMoney(totalMoney)}</p>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

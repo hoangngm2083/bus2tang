@@ -9,7 +9,6 @@ const TourCard = ({ tour }) => {
     tour;
   const parentPrice = ticketPriceList[0]["parentPrice"];
   const childPrice = ticketPriceList[0]["childPrice"];
-  const ticketType = ticketPriceList[0]["ticketType"];
 
   const TicketTypes = ticketPriceList?.map((ticket) => ticket["ticketType"]);
   const Img = mediaBusRouteList[0]["url"];
@@ -33,11 +32,10 @@ const TourCard = ({ tour }) => {
           <div className="card__bottom d-flex align-items-center justify-content-between mt-3">
             <div>
               <h5>
-                ${formatMoney(parentPrice)}{" "}
-                <span> /Người lớn/{ticketType}</span>
+                ${formatMoney(parentPrice)} <span> /Người lớn</span>
               </h5>
               <h5>
-                ${formatMoney(childPrice)} <span> /Trẻ em/{ticketType}</span>
+                ${formatMoney(childPrice)} <span> /Trẻ em</span>
               </h5>
             </div>
 

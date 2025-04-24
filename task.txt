@@ -1,3 +1,9 @@
-- Thanh toán
-- gắn API
+
+- gắn API: useFetch
++ FeaturedTourList: list of tour
++ Tours: getTourList
++ TourDetail: get tour detail by id
++ DatePicker: get RouteDeparturedateClient
++ DatePicker: search voucher, handleSearchVoucherClicked
++ Thanks: send invoice
 

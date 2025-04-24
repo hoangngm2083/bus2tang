@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import React from "react";
+import { useFormik } from "formik";
+import React, { useEffect } from "react";
 import * as Yup from "yup";
 
 const CustomerInfoForm = (params) => {
@@ -28,91 +28,109 @@ const CustomerInfoForm = (params) => {
     }),
   });
 
+  const formik = useFormik({
+    initialValues: initialValues,
+    validationSchema: validationSchema,
+    onSubmit: (values, { setSubmitting }) => {
+      console.log(values);
+      setSubmitting(false);
+    },
+  });
+
+  useEffect(() => {
+    if (formik.isValid) {
+      customerInfoRef.current = {
+        ...customerInfoRef.current,
+        ...formik.values,
+      };
+    }
+  }, [formik.values, formik.errors, formik.isValid]);
+
   return (
     <div className="container">
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          console.log(values);
-          setSubmitting(false);
-        }}
-      >
-        {({ values, errors, touched, isValid }) => (
-          <Form>
-            <div className="mb-3">
-              <Field
-                name="fullName"
-                type="text"
-                className="form-control"
-                placeholder="Họ và tên"
-              />
-              <ErrorMessage
-                name="fullName"
-                component="div"
-                className="text-danger"
-              />
-            </div>
-            <div className="mb-3">
-              <Field
-                name="email"
-                type="email"
-                className="form-control"
-                placeholder="email"
-              />
-              <ErrorMessage
-                name="email"
-                component="div"
-                className="text-danger"
-              />
-            </div>
-            <div className="mb-3">
-              <Field
-                name="phoneNumber"
-                type="text"
-                className="form-control"
-                placeholder="Số điện thoại"
-              />
-              <ErrorMessage
-                name="phoneNumber"
-                component="div"
-                className="text-danger"
-              />
-            </div>
-            <div className="mb-3">
-              <Field as="select" name="paymentMethod" className="form-select">
-                <option value="" disabled>
-                  Phương thức thanh toán
-                </option>
-                <option value="0">Thanh toán tại quầy</option>
-                <option value="1">Thanh toán trực tuyến</option>
-              </Field>
-              <ErrorMessage
-                name="paymentMethod"
-                component="div"
-                className="text-danger"
-              />
-            </div>
-            {values.paymentMethod === "1" && (
-              <div className="mb-3">
-                <Field as="select" name="paymentVia" className="form-select">
-                  <option value="" disabled>
-                    Thanh toán qua
-                  </option>
-                  <option value="zalopay">ZaloPay</option>
-                  <option value="vnpay">VN Pay</option>
-                  <option value="momo">MoMo</option>
-                </Field>
-                <ErrorMessage
-                  name="paymentVia"
-                  component="div"
-                  className="text-danger"
-                />
-              </div>
+      <form onSubmit={formik.handleSubmit}>
+        <div className="mb-3">
+          <input
+            name="fullName"
+            type="text"
+            className="form-control"
+            placeholder="Họ và tên"
+            value={formik.values.fullName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+          {formik.touched.fullName && formik.errors.fullName && (
+            <div className="text-danger">{formik.errors.fullName}</div>
+          )}
+        </div>
+        <div className="mb-3">
+          <input
+            name="email"
+            type="email"
+            className="form-control"
+            placeholder="email"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+          {formik.touched.email && formik.errors.email && (
+            <div className="text-danger">{formik.errors.email}</div>
+          )}
+        </div>
+        <div className="mb-3">
+          <input
+            name="phoneNumber"
+            type="text"
+            className="form-control"
+            placeholder="Số điện thoại"
+            value={formik.values.phoneNumber}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+          {formik.touched.phoneNumber && formik.errors.phoneNumber && (
+            <div className="text-danger">{formik.errors.phoneNumber}</div>
+          )}
+        </div>
+        <div className="mb-3">
+          <select
+            name="paymentMethod"
+            className="form-select"
+            value={formik.values.paymentMethod}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          >
+            <option value="" disabled>
+              Phương thức thanh toán
+            </option>
+            <option value="0">Thanh toán tại quầy</option>
+            <option value="1">Thanh toán trực tuyến</option>
+          </select>
+          {formik.touched.paymentMethod && formik.errors.paymentMethod && (
+            <div className="text-danger">{formik.errors.paymentMethod}</div>
+          )}
+        </div>
+        {formik.values.paymentMethod === "1" && (
+          <div className="mb-3">
+            <select
+              name="paymentVia"
+              className="form-select"
+              value={formik.values.paymentVia}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            >
+              <option value="" disabled>
+                Thanh toán qua
+              </option>
+              <option value="zalopay">ZaloPay</option>
+              <option value="vnpay">VN Pay</option>
+              <option value="momo">MoMo</option>
+            </select>
+            {formik.touched.paymentVia && formik.errors.paymentVia && (
+              <div className="text-danger">{formik.errors.paymentVia}</div>
             )}
-          </Form>
+          </div>
         )}
-      </Formik>
+      </form>
     </div>
   );
 };
