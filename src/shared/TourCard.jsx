@@ -1,16 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody } from "reactstrap";
+import apiMediafile from "../api/apiMediafile";
 import formatMoney from "../utils/formatMoney";
 import "./tour-card.css";
 
 const TourCard = ({ tour }) => {
-  const { _id, busRouteName, ticketPriceList, mediaBusRouteList, overview } =
-    tour;
+  const { urlImg, setUrlImg } = useState(null);
+
+  const {
+    idBusRoute,
+    busRouteName,
+    ticketPriceList,
+    mediaBusRouteList,
+    overview,
+  } = tour;
   const parentPrice = ticketPriceList[0]["parentPrice"];
   const childPrice = ticketPriceList[0]["childPrice"];
 
   const TicketTypes = ticketPriceList?.map((ticket) => ticket["ticketType"]);
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await apiMediafile(
+        mediaBusRouteList[0]?.idMediaFile
+      );
+      if (data) {
+        setUrlImg(data);
+        return;
+      }
+      console.log(error);
+    })();
+  }, []);
   const Img = mediaBusRouteList[0]["url"];
   return (
     <div className="tour__card">
@@ -24,7 +45,7 @@ const TourCard = ({ tour }) => {
 
         <CardBody>
           <h5 className="tour__title">
-            <Link to={`/tours/${_id}`}>{busRouteName}</Link>
+            <Link to={`/tours/${idBusRoute}`}>{busRouteName}</Link>
           </h5>
 
           <h6 className="tour__desc">{overview}</h6>
@@ -39,7 +60,7 @@ const TourCard = ({ tour }) => {
               </h5>
             </div>
 
-            <Link to={`/tours/${_id}`}>
+            <Link to={`/tours/${idBusRoute}`}>
               <button className=" booking__btn">Đặt ngay</button>
             </Link>
           </div>

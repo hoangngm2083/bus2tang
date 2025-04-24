@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import CommonSection from "../shared/CommonSection";
 // import tourData from '../assets/data/tours'
 import { Col, Container, Row } from "reactstrap";
-import { mockFeaturedTours } from "../mockData";
 import "../styles/tour.css";
 import Newsletter from "./../shared/Newsletter";
 import TourCard from "./../shared/TourCard";
@@ -11,9 +10,8 @@ const Tours = () => {
   const [pageCount, setPageCount] = useState(0);
   const [page, setPage] = useState(0);
 
-  // const { data: tours, loading, error } = useFetch(`${BASE_URL}/tours?page=${page}`)
-  // const { data: tourCount } = useFetch(`${BASE_URL}/tours/search/getTourCount`)
-  const tours = mockFeaturedTours;
+  const { data: tours, loading, error } = useFetch(`${BASE_URL}/busroute/hcm`);
+
   const tourCount = 10;
   useEffect(() => {
     const pages = Math.ceil(tourCount / 8);
@@ -32,10 +30,6 @@ const Tours = () => {
 
       <section className="pt-0">
         <Container>
-          {/* {loading && <h4 className='text-center pt-5'>LOADING..........</h4>}
-               {error && <h4 className='text-center pt-5'>{error}</h4>}
-               {
-                  !loading && !error && */}
           {
             <Row>
               {tours?.map((tour) => (

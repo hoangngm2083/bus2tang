@@ -1,24 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../styles/tour-details.css";
-// import tourData from '../assets/data/tours'
+
 import { useParams } from "react-router-dom";
 import { Col, Container, ListGroup, Row } from "reactstrap";
 import ReviewElement from "../components/Testimonial/ReviewElement";
 import Newsletter from "../shared/Newsletter";
 
 import Booking from "../components/Booking";
+import FetchMediafile from "../components/FetchMediafile";
 import Slide from "../components/Slide";
-import { mockReviews, mockTourDetail } from "../mockData";
+import useFetch from "../hooks/useFetch";
+import { mockReviews } from "../mockData";
 
 const TourDetails = () => {
   const { id } = useParams();
 
-  const [tourRating, setTourRating] = useState(null);
+  const imgs = useRef();
 
-  const tour = mockTourDetail; // api
+  // fetch data from database
+  const { data, loading, error } = useFetch(`${BASE_URL}/busroute/hcm/${id}`);
+  const [tourImgs, setTourImgs] = useState(null);
 
   const {
-    photo,
     busRouteName,
     overview,
     highlights,
@@ -30,20 +33,9 @@ const TourDetails = () => {
     mediaBusRouteList,
     busStopList,
     ticketPriceList,
-    desc,
-    price,
-
-    city,
-    address,
-    distance,
-    maxGroupSize,
-  } = tour; // tour
-
-  // fetch data from database
-  //   const { data: tour, loading, error } = useFetch(`${BASE_URL}/tours/${id}`);
+  } = data.busRoute; // tour
 
   const reviews = mockReviews;
-  const tourImgs = mediaBusRouteList.map((ele) => ele["url"]);
 
   const tourInfos = [
     { title: "Tổng quan", content: overview },
@@ -56,15 +48,13 @@ const TourDetails = () => {
   ];
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [tour]);
+    setTourImgs(imgs.current);
+  }, [imgs.current]);
 
   return (
     <section>
+      <FetchMediafile imgIds={mediaBusRouteList} imgUrlRef={imgs} />
       <Container>
-        {/* {loading && <h4 className="text-center pt-5">LOADING.........</h4>}
-        {error && <h4 className="text-center pt-5">{error}</h4>}
-        {!loading && !error && ( */}
         {
           <Row>
             <Col lg="8">

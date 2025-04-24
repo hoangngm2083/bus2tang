@@ -3,16 +3,12 @@ import TourCard from "../../shared/TourCard";
 // import tourData from '../../assets/data/tours'
 import { Col } from "reactstrap";
 
-import { mockFeaturedTours } from "../../mockData";
-
 const FeaturedTourList = () => {
-  //   const {
-  //     data: featuredTours,
-  //     loading,
-  //     error,
-  //   } = useFetch(`${BASE_URL}/tours/search/getFeaturedTour`);
-  // console.log(featuredTours)
-  const featuredTours = mockFeaturedTours;
+  const {
+    data: featuredTours,
+    loading,
+    error,
+  } = useFetch(`${BASE_URL}/busroute/hcm`);
 
   return (
     <>

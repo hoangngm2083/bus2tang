@@ -114,11 +114,18 @@ const TicketForm = ({
         return;
       }
 
-      // Mock API response
-      const mockVoucherPercent = 25;
-      ticketBookedInfoRef.current.voucherPercent = mockVoucherPercent;
-      setVoucherMessage(`Giảm ${mockVoucherPercent}%`);
-      reCalcTotalMoney(ticketBookedInfoRef.current, ticketTypeIdSelected);
+      (async () => {
+        const { data, message } = await fetch(
+          `${BASE_URL}/voucher/${voucherCode}`
+        );
+        if (data) {
+          setVoucherMessage(data?.content);
+          ticketBookedInfoRef.current.voucherPercent = data?.percent;
+          reCalcTotalMoney(ticketBookedInfoRef.current, ticketTypeIdSelected);
+          return;
+        }
+        setVoucherMessage(message);
+      })();
     },
     [
       formik.values.voucherCode,
@@ -179,10 +186,10 @@ const TicketForm = ({
                   <p className="mb-0 fw-bold">
                     Loại vé: {ticketPrice.ticketType}
                   </p>
-                  <p className="mb-0">
+                  <p style={{ fontSize: "14px" }} className="mb-0">
                     {formatMoney(ticketPrice.parentPrice)}/Người lớn
                   </p>
-                  <p className="mb-0">
+                  <p style={{ fontSize: "14px" }} className="mb-0">
                     {formatMoney(ticketPrice.childPrice)}/Trẻ em
                   </p>
                 </div>

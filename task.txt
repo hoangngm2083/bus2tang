@@ -1,9 +1,9 @@
 
 - gắn API: useFetch
-+ FeaturedTourList: list of tour
-+ Tours: getTourList
-+ TourDetail: get tour detail by id
++ FeaturedTourList: list of tour: x
++ Tours: getTourList:  x
++ TourDetail: get tour detail by id: x
 + DatePicker: get RouteDeparturedateClient
-+ DatePicker: search voucher, handleSearchVoucherClicked
++ DatePicker: search voucher, handleSearchVoucherClicked: x
 + Thanks: send invoice
 
