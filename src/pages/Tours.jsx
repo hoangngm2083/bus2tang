@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import CommonSection from "../shared/CommonSection";
 // import tourData from '../assets/data/tours'
 import { Col, Container, Row } from "reactstrap";
+import useFetch from "../hooks/useFetch";
 import "../styles/tour.css";
+import { BASE_URL } from "../utils/config";
 import Newsletter from "./../shared/Newsletter";
 import TourCard from "./../shared/TourCard";
 

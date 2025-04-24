@@ -8,6 +8,7 @@ import TicketForm from "./TicketForm";
 
 const Booking = ({
   busRouteName = mockTourDetail["busRouteName"],
+  idBusRoute = mockTourDetail["idBusRoute"],
   ticketPriceList = mockTourDetail["ticketPriceList"],
 }) => {
   const dispatch = useDispatch();
@@ -64,6 +65,7 @@ const Booking = ({
         {/* Sub-Row 2: price */}
         <div className="row">
           <TicketForm
+            idBusRoute={idBusRoute}
             ticketPriceList={ticketPriceList}
             ticketBookedInfoRef={ticketBookedInfoRef}
           />

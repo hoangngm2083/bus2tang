@@ -2,11 +2,13 @@ import { useFormik } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import * as Yup from "yup";
 import { mockTourDetail } from "../../mockData";
+import { BASE_URL } from "../../utils/config";
 import formatMoney from "../../utils/formatMoney";
 import DatePicker from "./DatePicker";
 
 const TicketForm = ({
   ticketBookedInfoRef,
+  idBusRoute,
   numberOfSeats = 30,
   ticketPriceList = mockTourDetail.ticketPriceList,
 }) => {
@@ -165,7 +167,10 @@ const TicketForm = ({
   return (
     <div className="container">
       <div className="card mb-3">
-        <DatePicker ticketBookedInfoRef={ticketBookedInfoRef} />
+        <DatePicker
+          idBusRoute={idBusRoute}
+          ticketBookedInfoRef={ticketBookedInfoRef}
+        />
       </div>
       <div className="row">
         {ticketPriceList.map((ticketPrice) => (

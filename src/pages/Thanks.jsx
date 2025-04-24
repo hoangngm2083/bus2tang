@@ -12,6 +12,7 @@ import {
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { getBookingInfo } from "../store/bookingSlice";
+import { BASE_URL } from "../utils/config";
 
 // Hàm chuyển đổi định dạng ngày từ VNPay (YYYYMMDDHHMMSS) sang dạng dễ đọc
 const formatDate = (vnpPayDate) => {
@@ -61,7 +62,29 @@ const Thanks = () => {
 
       // Send to Server
       // api
-      console.log(bookingInfo);
+      (() => {
+        fetch(`${BASE_URL}/bookpayment`, {
+          method: "POST", // Phương thức HTTP
+          headers: {
+            "Content-Type": "application/json", // Loại nội dung của body
+            // Thêm các header khác nếu cần (ví dụ: Authorization)
+          },
+          body: JSON.stringify(bookingInfo), // Dữ liệu gửi đi, chuyển thành chuỗi JSON
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json(); // Hoặc response.text(), response.blob(), tùy thuộc vào phản hồi
+          })
+          .then((data) => {
+            console.log("Success:", data); // Xử lý phản hồi từ server
+          })
+          .catch((error) => {
+            console.error("Error:", error); // Xử lý lỗi
+          });
+      })();
+      // console.log(bookingInfo);
 
       setPaymentStatus("success");
     } else {

@@ -31,7 +31,7 @@ const FetchMediafile = ({ imgIds, imgUrlRef }) => {
 
     // Thu hồi URL khi component unmount
     return () => {
-      imageUrls.forEach((url) => URL.revokeObjectURL(url));
+      imgUrlRef.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [imgIds]);
 

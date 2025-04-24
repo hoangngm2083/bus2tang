@@ -2,6 +2,8 @@ import React from "react";
 import TourCard from "../../shared/TourCard";
 // import tourData from '../../assets/data/tours'
 import { Col } from "reactstrap";
+import useFetch from "../../hooks/useFetch";
+import { BASE_URL } from "../../utils/config";
 
 const FeaturedTourList = () => {
   const {

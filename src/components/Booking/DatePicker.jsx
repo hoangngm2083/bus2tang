@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { mockTicketTour } from "../../mockData";
+import api from "../../api/api";
+import { BASE_URL } from "../../utils/config";
 
 const DatePicker = (props) => {
-  const { ticketBookedInfoRef = {} } = props;
+  const { ticketBookedInfoRef = {}, idBusRoute } = props;
+  const [ticketTour, setTicketTour] = useState(null);
 
   // Variables
   const numOfDateToDisplay = 4;
@@ -12,12 +14,19 @@ const DatePicker = (props) => {
   const [startDate, setStartDate] = useState(0);
 
   // API
-  const ticketTour = mockTicketTour; // call api
-  useEffect(() => {
-    // call API
 
-    ticketBookedInfoRef.current.idRouteDepartureDate =
-      ticketTour[0].idRouteDepartureDate;
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await api(
+        `${BASE_URL}/routerdeparturedateclient/${idBusRoute}`
+      );
+
+      console.log("DatePicker: data:", data);
+
+      // ticketBookedInfoRef.current.idRouteDepartureDate =
+      //   ticketTour[0].idRouteDepartureDate;
+      // setTicketTour(data);
+    })();
   }, []);
 
   const handleNextDateGroup = () => {
